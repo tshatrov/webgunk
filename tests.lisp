@@ -1,4 +1,4 @@
-(in-package :webgunk-test)
+(in-package :webgunk/test)
 
 (define-test strip-whitespace-test
   (assert-equal "aaa" (strip-whitespace "   aaa       "))

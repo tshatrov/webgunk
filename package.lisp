@@ -7,14 +7,15 @@
            :jsown-filter)
   (:import-from :split-sequence :split-sequence))
 
-(defpackage :webgunk-test
+(defpackage :webgunk/test
   (:use :cl :webgunk :lisp-unit))
 
-(defpackage :webgunk-modules
-  (:use :cl :webgunk))
+(defpackage :webgunk/modules
+  (:use :cl :webgunk)
+  (:export :get-results :next-page :prev-page))
 
-(defpackage :webgunk-google
-  (:use :cl :webgunk-modules))
+(defpackage :webgunk/google
+  (:use :cl :webgunk :webgunk/modules))
 
-(defpackage :webgunk-reddit
-  (:use :cl :webgunk-modules))
+(defpackage :webgunk/reddit
+  (:use :cl :webgunk :webgunk/modules))
