@@ -71,10 +71,12 @@ spec can be one of the following:
 
 ;; HTTP request / URL helpers
 
-(defun http-request (&rest args)
+(defvar *webgunk-cookie-jar* nil)
+
+(defun http-request (uri &rest args)
   "A wrapper around DRAKMA:HTTP-REQUEST which converts octet array
 which it sometimes returns to normal string"
-  (let ((result (apply #'drakma:http-request args)))
+  (let ((result (apply #'drakma:http-request uri `(,@args :cookie-jar ,*webgunk-cookie-jar*))))
     (if (and (arrayp result)
              (equal (array-element-type result) '(unsigned-byte 8)))
         (flexi-streams:octets-to-string result)

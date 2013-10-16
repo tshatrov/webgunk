@@ -22,10 +22,9 @@
      (jsown-filter json "data" "before")
      )))
 
-(defclass reddit-browser ()
+(defclass reddit-browser (authorizable-module)
   ((base-url :initform "http://www.reddit.com" :initarg :url :reader base-url)
    (current-url :reader current-url)
-   (cookie-jar :initform nil :initarg :cookie-jar :reader cookie-jar)
    (keys :initform (list "title" "url") :initarg :keys :accessor keys)
    ;;(count :initform 0 :reader count)
    (after :initform :unknown)
@@ -40,7 +39,7 @@
     (when reset
       (setf current-url base-url))
     (multiple-value-bind (results after before)
-        (get-reddit-data current-url :keys (keys obj) :cookie-jar (cookie-jar obj))
+        (get-reddit-data current-url :keys (keys obj) :cookie-jar (get-cookie-jar obj))
       (setf (slot-value obj 'after) after
             (slot-value obj 'before) before)
       results)))
