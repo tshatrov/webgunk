@@ -10,9 +10,10 @@
   (:documentation "Switch to the previous page"))
 
 (defclass authorizable-module ()
-  ((cookie-jar :initform nil :initarg :cookie-jar :reader get-cookie-jar)))
+  ((cookie-jar :initform (make-instance 'drakma:cookie-jar)
+               :initarg :cookie-jar :reader get-cookie-jar)))
 
-(defgeneric authorize (obj &key &allow-other-keys)
+(defgeneric authorize (obj &key)
   (:documentation "Authorize user for the given object"))
 
 (defmacro with-cookie-jar (obj &body body)

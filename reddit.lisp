@@ -14,8 +14,8 @@
               (complete-url base-url ".json")
               (complete-url base-url "/.json"))))))
 
-(defun get-reddit-data (url &key (keys '("title" "url")) cookie-jar)
-  (let ((json (jsown:parse (http-request (get-reddit-json-url url) :cookie-jar cookie-jar))))
+(defun get-reddit-data (url &key (keys '("title" "url")))
+  (let ((json (jsown:parse (http-request (get-reddit-json-url url)))))
     (values 
      (jsown-filter json "data" "children" map "data" keys)
      (jsown-filter json "data" "after")
@@ -39,7 +39,8 @@
     (when reset
       (setf current-url base-url))
     (multiple-value-bind (results after before)
-        (get-reddit-data current-url :keys (keys obj) :cookie-jar (get-cookie-jar obj))
+        (with-cookie-jar obj
+          (get-reddit-data current-url :keys (keys obj)))
       (setf (slot-value obj 'after) after
             (slot-value obj 'before) before)
       results)))
@@ -52,3 +53,11 @@
           (t (setf current-url
                    (append-param-str base-url (concatenate 'string "after=" after)))
              (get-results obj)))))
+
+(defmethod authorize ((obj reddit-browser) &key login password)
+  (let ((login-url "https://ssl.reddit.com/api/login"))
+    (with-cookie-jar obj
+      (http-request login-url :method :post
+                    :parameters `(("api_type" . "json")
+                                  ("user" . ,login)
+                                  ("passwd" . ,password))))))
