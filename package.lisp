@@ -15,7 +15,7 @@
 (defpackage :webgunk/modules
   (:use :cl :webgunk)
   (:export :get-results :next-page :prev-page :authorize :authorizable-module
-           :get-cookie-jar :with-cookie-jar))
+           :get-cookie-jar :with-cookie-jar :make-request))
 
 (defpackage :webgunk/google
   (:use :cl :webgunk :webgunk/modules))

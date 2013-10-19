@@ -20,5 +20,12 @@
   `(let ((*webgunk-cookie-jar* (get-cookie-jar ,obj)))
      ,@body))
 
+(defgeneric make-request (obj uri &rest args)
+  (:documentation "Make request using this object's cookie jar")
+  (:method ((obj authorizable-module) uri &rest args)
+    (with-cookie-jar obj
+      (apply #'http-request uri args))))
+  
+
 
   
