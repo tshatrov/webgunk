@@ -103,6 +103,15 @@ which it sometimes returns to normal string"
   (let ((parameters (make-params params)))
     (apply #'parse-url url :parameters parameters args)))
 
+
+(defgeneric parse (method response &key)
+  (:documentation "Parse response using method")
+  (:method ((method (eql :dom)) response &key)
+    (chtml:parse response (cxml-dom:make-dom-builder)))
+  (:method ((method (eql :jsown)) response &key)
+    (jsown:parse response)))
+
+
 (defun url-params (url &key only-params &aux (qpos (position #\? url)))
   "Returns alist of url get-parameters. 
 Also returns base url and query as string as second and third return values respectively"

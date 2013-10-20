@@ -13,6 +13,14 @@
   ((cookie-jar :initform (make-instance 'drakma:cookie-jar)
                :initarg :cookie-jar :reader get-cookie-jar)))
 
+(defgeneric add-cookie (obj cookie)
+  (:method ((obj authorizable-module) cookie)
+    (push cookie (drakma:cookie-jar-cookies (slot-value obj 'cookie-jar)))))
+
+(defgeneric clear-cookies (obj)
+  (:method ((obj authorizable-module))
+    (setf (drakma:cookie-jar-cookies (slot-value obj 'cookie-jar)) nil)))
+
 (defgeneric authorize (obj &key)
   (:documentation "Authorize user for the given object"))
 

@@ -3,7 +3,7 @@
 (defpackage :webgunk
   (:use :cl :alexandria)
   (:export :jsown-filter :get-attributes :strip-whitespace :node-text
-           :http-request :parse-url :parse-request
+           :http-request :parse-url :parse-request :parse
            :url-params :get-url-param :append-param-str 
            :url-params-to-string :make-url
            :*webgunk-cookie-jar*)
@@ -15,7 +15,7 @@
 (defpackage :webgunk/modules
   (:use :cl :webgunk)
   (:export :get-results :next-page :prev-page :authorize :authorizable-module
-           :get-cookie-jar :with-cookie-jar :make-request))
+           :add-cookie :clear-cookies :get-cookie-jar :with-cookie-jar :make-request))
 
 (defpackage :webgunk/google
   (:use :cl :webgunk :webgunk/modules))
