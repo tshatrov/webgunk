@@ -95,3 +95,8 @@
     post))
 
   
+(defmethod print-comments ((obj tumblr-post))
+  (loop for note in (notes obj)
+       if (note-comment note) do
+       (format t "~a reblogged from ~a and added:~%" (note-user note) (note-from note))
+       (format t "~a~%~a~%~%" (note-comment note) (note-link note))))
