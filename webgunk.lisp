@@ -38,6 +38,11 @@ spec can be one of the following:
   (mapcar (lambda (attr) (cons (dom:name attr) (dom:value attr)))
        (dom:items (dom:attributes element))))
 
+(defun class-list (element)
+  (let ((class-string (cdr (assoc "class" (get-attributes element) :test #'equalp))))
+    (when class-string
+      (split-sequence:split-sequence #\Space class-string :remove-empty-subseqs t))))
+
 (defun strip-whitespace (str)
   ;;remove initial whitespace
   (setf str (cl-ppcre:regex-replace "^\\s+" str ""))

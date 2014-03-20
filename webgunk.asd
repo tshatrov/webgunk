@@ -49,3 +49,10 @@
   :depends-on (#:webgunk/modules)
   :components ((:file "reddit")))
 
+(asdf:defsystem #:webgunk/tumblr
+  :serial t
+  :description "Webgunk tumblr module"
+  :author "Timofei Shatrov <timofei.shatrov@gmail.com>"
+  :license "MIT"
+  :depends-on (#:webgunk/modules)
+  :components ((:file "tumblr")))
