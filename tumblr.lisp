@@ -85,13 +85,14 @@
           (setf notes-next next))))))
 
         
-(defmethod get-all-notes ((obj tumblr-post))
-  (loop while (get-notes-once obj) do (princ ".")))
+(defmethod get-all-notes ((obj tumblr-post) &key (progress t))
+  (loop while (get-notes-once obj) if progress do (princ ".") 
+     finally (when progress (terpri))))
       
 
-(defun get-post-notes (url)
+(defun get-post-notes (url &key (progress t))
   (let ((post (make-instance 'tumblr-post :url url)))
-    (get-all-notes post)
+    (get-all-notes post :progress progress)
     post))
 
   
