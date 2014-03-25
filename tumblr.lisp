@@ -42,9 +42,12 @@
            (setf note-type :original))
           ((equal class "reblog")
            (setf note-type :reblog)
-           (let ((source-node (car (css:query "a.source_tumblelog" node))))
+           (let ((source-node (car (css:query "a.source_tumblelog" node)))
+                 (span-node (car (css:query "span.action" node))))
              (when source-node
-               (setf note-from (node-text source-node)))))
+               (setf note-from (node-text source-node)))
+             (when span-node
+               (setf note-link (dom:get-attribute span-node "data-post-url")))))
           ((equal class "with_commentary")
            (let ((comment-node (car (css:query "blockquote > a" node))))
              (when comment-node
@@ -101,3 +104,36 @@
        if (note-comment note) do
        (format t "~a reblogged from ~a and added:~%" (note-user note) (note-from note))
        (format t "~a~%~a~%~%" (note-comment note) (note-link note))))
+
+
+(defmethod make-note-tree ((obj tumblr-post))
+  (let ((pointers (make-hash-table :test 'equal)))
+    (macrolet ((add-node (name key place)
+                 `(let ((cs (cons ,name nil)))
+                    (push cs ,place)
+                    (unless (nth-value 1 (gethash ,key pointers))
+                      (setf (gethash ,key pointers) cs)))))
+      (loop with result = (list)
+         for note in (notes obj)
+         if (member (note-type note) '(:reblog :original))
+         do (let ((user (note-user note))
+                  (from (note-from note)))
+              (cond ((not from) (add-node user user result))
+                    ((nth-value 1 (gethash from pointers))
+                     (add-node user user (cdr (gethash from pointers))))
+                    (t ;; no from node (deleted post or something)
+                     (add-node (format nil "[~a]" from) from result)
+                     (add-node user user (cdr (gethash from pointers))))))
+         finally (return result)))))
+
+
+(defmethod print-tree ((obj tumblr-post))
+  (let ((note-tree (make-note-tree obj)))
+    (labels ((print-level (tree offset)
+               (loop for node in (reverse tree)
+                    do
+                    (terpri)
+                    (loop repeat offset do (princ " |"))
+                    (format t "-~a" (car node))
+                    (print-level (cdr node) (1+ offset)))))
+      (print-level note-tree 0))))
