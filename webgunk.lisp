@@ -39,9 +39,7 @@ spec can be one of the following:
        (dom:items (dom:attributes element))))
 
 (defun class-list (element)
-  (let ((class-string (cdr (assoc "class" (get-attributes element) :test #'equalp))))
-    (when class-string
-      (split-sequence:split-sequence #\Space class-string :remove-empty-subseqs t))))
+  (split-sequence:split-sequence #\Space (dom:get-attribute element "class")))
 
 (defun strip-whitespace (str)
   ;;remove initial whitespace
