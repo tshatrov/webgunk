@@ -70,6 +70,8 @@
       (setf (slot-value obj 'notes-code) (elt groups 0)))))
 
 
+(define-condition out-of-notes (error) ())
+
 (defmethod get-notes-once ((obj tumblr-post))
   (with-slots (notes-code notes-next) obj
     (when (not notes-code)
@@ -79,6 +81,8 @@
            (document (parse-url notes-url))
            (notes-list (car (css:query "ol.notes" document)))
            (next-link (car (css:query "a.more_notes_link" document))))
+      (unless notes-list
+        (error 'out-of-notes))
       (loop for note-node across (dom:child-nodes notes-list)
            for note = (make-note-from-node note-node)
            when note do (push note (notes obj)))
@@ -89,8 +93,15 @@
 
         
 (defmethod get-all-notes ((obj tumblr-post) &key (progress t))
-  (loop while (get-notes-once obj) if progress do (princ ".") 
-     finally (when progress (terpri))))
+  (handler-bind
+      ((out-of-notes
+        (lambda (c)
+          (declare (ignore c))
+          (when progress
+            (format t "~%Error: response with no notes~%")
+            (return-from get-all-notes)))))
+    (loop while (get-notes-once obj) if progress do (princ ".") 
+       finally (when progress (terpri)))))
       
 
 (defun get-post-notes (url &key (progress t))
