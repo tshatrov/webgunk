@@ -67,6 +67,7 @@
          (regex (format nil "/notes/~a/(\\w+)" (post-id obj))))
     (multiple-value-bind (note-url groups) (ppcre:scan-to-strings regex resp)
       (declare (ignore note-url))
+      (unless groups (error 'out-of-notes))
       (setf (slot-value obj 'notes-code) (elt groups 0)))))
 
 
