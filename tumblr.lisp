@@ -64,11 +64,13 @@
 ;; tumblrReq.open('GET','/notes/801#########/wwwwwwwww?from_c=##########',true);
 (defmethod get-notes-code ((obj tumblr-post))
   (let* ((resp (http-request (url obj)))
-         (regex (format nil "/notes/~a/(\\w+)" (post-id obj))))
+         (regex (format nil "/notes/~a/(\\w+)\\?from_c=(\\d+)" (post-id obj))))
     (multiple-value-bind (note-url groups) (ppcre:scan-to-strings regex resp)
       (declare (ignore note-url))
       (unless groups (error 'out-of-notes))
-      (setf (slot-value obj 'notes-code) (elt groups 0)))))
+      (setf (slot-value obj 'notes-code) (elt groups 0)
+            (slot-value obj 'notes-next) (elt groups 1)
+            ))))
 
 
 (define-condition out-of-notes (error) ())
@@ -100,6 +102,11 @@
           (declare (ignore c))
           (when progress
             (format t "~%Error: response with no notes~%")
+            (return-from get-all-notes))))
+       (error
+        (lambda (c)
+          (when progress
+            (format t "~%Error: ~a ~%" c)
             (return-from get-all-notes)))))
     (loop while (get-notes-once obj) if progress do (princ ".") 
        finally (when progress (terpri)))))
