@@ -84,7 +84,12 @@ which it sometimes returns to normal string"
     (apply #'values
            (if (and (arrayp result)
                     (equal (array-element-type result) '(unsigned-byte 8)))
-               (flexi-streams:octets-to-string result)
+               (let* ((content-type (nth-value 2 (drakma:get-content-type (third result-mv))))
+                      (charset (drakma:parameter-value "charset" content-type)))
+                 (cond ((equal charset "shift_jis")
+                        (babel:octets-to-string result :encoding :cp932))
+                       (t
+                        (flexi-streams:octets-to-string result))))
                result)
            (cdr result-mv))))
 
