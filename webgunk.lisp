@@ -173,3 +173,9 @@ Can either overwrite or append parameters already present in url"
       (if (= (length paramstr) 0)
           base-url
           (concatenate 'string base-url "?" paramstr)))))
+
+(defun get-url-file-name (url)
+  (let* ((base-url (nth-value 1 (webgunk:url-params url)))
+         (pos (position #\/ base-url :from-end t))
+         (fname (subseq base-url (1+ pos))))
+    fname))

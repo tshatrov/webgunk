@@ -4,8 +4,8 @@
   (:use :cl :alexandria)
   (:export :jsown-filter :get-attributes :class-list :strip-whitespace
            :http-request :parse-url :parse-request :parse :node-text
-           :url-params :get-url-param :append-param-str 
-           :url-params-to-string :make-url
+           :url-params :get-url-param :append-param-str
+           :url-params-to-string :make-url :get-url-file-name
            :*webgunk-cookie-jar*)
   (:import-from :split-sequence :split-sequence))
 
