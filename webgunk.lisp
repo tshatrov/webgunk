@@ -6,10 +6,10 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defun val-map (values keys)
     "Recursively maps values across keys, both values and keys can be a list structure or an atom"
-    (cond 
+    (cond
       ((null values) nil)
       ((eql (car values) :obj)
-       (etypecase keys 
+       (etypecase keys
          (null nil)
          (atom (jsown:val values keys))
          (list (cons (val-map values (car keys)) (val-map values (cdr keys))))))
@@ -46,17 +46,17 @@ spec can be one of the following:
   (setf str (cl-ppcre:regex-replace "^\\s+" str ""))
   ;;remove trailing whitespace
   (setf str (cl-ppcre:regex-replace "\\s+$" str ""))
-  
+
   ;;remove initial/trailing whitespace in multiline mode
   (setf str (cl-ppcre:regex-replace-all "(?m)^[^\\S\\r\\n]+|[^\\S\\r\\n]+$" str ""))
   (setf str (cl-ppcre:regex-replace-all "(?m)[^\\S\\r\\n]+\\r$" str (make-string 1 :initial-element #\Return)))
-  
+
   ;;replace more than two whitespaces with one
   (setf str (cl-ppcre:regex-replace-all "[^\\S\\r\\n]{2,}" str " "))
-  
+
   ;;remove solitary linebreaks
   (setf str (cl-ppcre:regex-replace-all "([^\\r\\n])(\\r\\n|\\n)([^\\r\\n])" str '(0 " " 2)))
-  
+
   ;;replace more than one linebreak with one
   (setf str (cl-ppcre:regex-replace-all "(\\r\\n|\\n){2,}" str '(0)))
   str)
@@ -121,7 +121,7 @@ which it sometimes returns to normal string"
 
 
 (defun url-params (url &key only-params &aux (qpos (position #\? url)))
-  "Returns alist of url get-parameters. 
+  "Returns alist of url get-parameters.
 Also returns base url and query as string as second and third return values respectively"
   (let* ((query (if qpos (subseq url (1+ qpos)) (if only-params url "")))
          (split-query (split-sequence #\& query :remove-empty-subseqs t)))
@@ -131,7 +131,7 @@ Also returns base url and query as string as second and third return values resp
         (if eqpos
             (let ((key (subseq part 0 eqpos))
                   (value (subseq part (1+ eqpos))))
-              (cons key (do-urlencode:urldecode value :queryp t :lenientp t)))
+              (cons key (do-urlencode:urldecode value :queryp t)))
             (cons part part)))
       split-query)
      (if qpos (subseq url 0 qpos) (if only-params nil url))
@@ -150,17 +150,17 @@ Also returns base url and query as string as second and third return values resp
 (defun url-params-to-string (params &key (encode t))
   "Converts alist/plist of parameters to string"
   (setf params (make-params params))
-  (format nil "~{~a~^&~}" 
+  (format nil "~{~a~^&~}"
           (mapcar
            (lambda (pair)
              (let ((key (string-downcase (princ-to-string (car pair))))
                    (value (cdr pair)))
-               (format nil "~A~:[~;=~A~]" key value 
+               (format nil "~A~:[~;=~A~]" key value
                        (if encode (do-urlencode:urlencode (princ-to-string value) :queryp t) value))))
            params)))
 
 (defun make-url (url params &key (overwrite t) (encode t))
-  "Makes url from existing url and parameters. 
+  "Makes url from existing url and parameters.
 Can either overwrite or append parameters already present in url"
   (setf params (make-params params))
   (multiple-value-bind (old-params base-url) (url-params url)
@@ -173,9 +173,3 @@ Can either overwrite or append parameters already present in url"
       (if (= (length paramstr) 0)
           base-url
           (concatenate 'string base-url "?" paramstr)))))
-
-
-    
-    
-  
-   

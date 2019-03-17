@@ -102,12 +102,12 @@
           (declare (ignore c))
           (when progress
             (format t "~%Error: response with no notes~%")
-            (return-from get-all-notes))))
+            (return-from get-all-notes obj))))
        (error
         (lambda (c)
           (when progress
             (format t "~%Error: ~a ~%" c)
-            (return-from get-all-notes)))))
+            (return-from get-all-notes obj)))))
     (loop while (get-notes-once obj) if progress do (princ ".") 
        finally (when progress (terpri)))))
       
